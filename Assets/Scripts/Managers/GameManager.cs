@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public int m_NumRoundsToWin = 5; //Número de rondas que un jugador debe ganar para ganar el juego 
+    public int m_NumRoundsToWin = 3; //Número de rondas que un jugador debe ganar para ganar el juego 
     public float m_StartDelay = 3f; ///Delay entre las fases de RoundStarting yRoundPlaying
     public float m_EndDelay = 3f; ///Delay entre las fases de RoundPlaying y RoundEnding
     public CameraControl m_CameraControl; ///Referencia al sccript de CameraControl 
@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     private WaitForSeconds m_EndWait;
     private TankManager m_RoundWinner;
     private TankManager m_GameWinner;
-
+    private bool isEnd = false;
 
     const float k_MaxDepenetrationVelocity = float.PositiveInfinity;
 
@@ -65,17 +65,22 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator GameLoop()
     {
+
         yield return StartCoroutine(RoundStarting());
         yield return StartCoroutine(RoundPlaying());
         yield return StartCoroutine(RoundEnding());
 
-        if (m_GameWinner != null)
+        if (!isEnd)
         {
-            SceneManager.LoadScene(0);
-        }
-        else
-        {
-            StartCoroutine(GameLoop());
+            if (m_GameWinner != null)
+            {
+                SceneManager.LoadScene(0);
+            }
+            else
+            {
+
+                StartCoroutine(GameLoop());
+            }
         }
 
     }
@@ -186,7 +191,11 @@ public class GameManager : MonoBehaviour
         }
 
         if (m_GameWinner != null)
-            message = m_GameWinner.m_ColoredPlayerText + " WINS THE GAME!";
+        {
+            message = m_GameWinner.m_ColoredPlayerText + " GANO EL JUEGO!\n";
+            message += "PUNTUAJE: " + m_GameWinner.m_Wins;
+            isEnd = true;
+        }
 
         return message;
     }
